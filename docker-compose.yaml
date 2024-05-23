@@ -1,0 +1,12 @@
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra
+    ports:
+       - 127.0.0.1:9042:9042
+    environment:
+      CASSANDRA_CLUSTER_NAME: logboek
+
+networks:
+  default:
+    name: logboek

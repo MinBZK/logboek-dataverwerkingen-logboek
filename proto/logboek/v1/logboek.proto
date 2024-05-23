@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package logboek.v1;
+
+import "google/protobuf/timestamp.proto";
+
+
+service LogboekService {
+    rpc Export(ExportOperationsRequest) returns (ExportOperationsResponse) {}
+}
+
+message ExportOperationsRequest {
+    Resource resource = 1;
+    repeated ProcessingOperation operations = 2;
+}
+
+message ExportOperationsResponse {}
+
+message Resource {
+    string name = 1;
+    string version = 2;
+}
+
+message ProcessingOperation {
+    bytes trace_id = 1;
+
+    bytes operation_id = 2;
+
+    bytes parent_operation_id = 3;
+
+    string name = 4;
+
+    google.protobuf.Timestamp start_time = 5;
+
+    google.protobuf.Timestamp end_time = 6;
+
+    enum StatusCode {
+        STATUS_CODE_UNKNOWN = 0;
+        STATUS_CODE_OK = 1;
+        STATUS_CODE_ERROR = 2;
+    }
+
+    StatusCode status_code = 7;
+
+    message ForeignProcessingOperation {
+        bytes trace_id = 1;
+
+        bytes operation_id = 2;
+
+        string entity = 3;
+    }
+
+    ForeignProcessingOperation foreign_operation = 8;
+
+    repeated Attribute attributes = 9;
+}
+
+message Attribute {
+    string key = 1;
+    string value = 2;
+}

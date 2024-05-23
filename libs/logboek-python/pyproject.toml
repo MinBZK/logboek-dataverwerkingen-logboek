@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "logboek"
+description = "Logboek dataverwerkingen library"
+requires-python = ">= 3.8"
+
+version = "0.1.0"
+
+dependencies = [
+  # Keep the lower bound versions in sync with the versions from
+  # `requirements.txt` in the root directory
+  "protobuf >= 5.26.1, < 6.0",
+  "grpcio >= 1.63.0, < 2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black ~= 24.3",
+  "isort ~= 5.13",
+  "flake8 ~= 7.0",
+  "Flake8-pyproject ~= 1.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/logboek"]
+
+[tool.pip-tools]
+generate_hashes = true
+strip_extras = true
+extra = ["dev"]
+output-file = "requirements-dev.txt"
+
+[tool.black]
+line-length = 120
+extend-exclude = "src/logboek/proto"
+
+[tool.isort]
+profile = "black"
+lines_after_imports = 2
+extend_skip = ["src/logboek/proto"]
+
+[tool.flake8]
+ignore = ["E501"]
+extend_exclude = [".venv", "src/logboek/proto"]
