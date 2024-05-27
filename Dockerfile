@@ -25,4 +25,8 @@ WORKDIR /var/lib/logboek
 
 COPY --from=build /go/bin/ /usr/local/bin
 
+ENV LISTEN_ADDRESS="0.0.0.0:9000"
+
+EXPOSE 9000
+
 ENTRYPOINT ["/usr/local/bin/logboek"]
