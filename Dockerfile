@@ -4,12 +4,8 @@ WORKDIR /app/server
 
 RUN apk add --no-cache gcc musl-dev
 
-COPY server/go.mod server/go.sum .
-
-# TEMP
 COPY libs/logboek-go /app/libs/logboek-go
-RUN go mod edit -replace github.com/MinBZK/logboek-dataverwerkingen-logboek/libs/logboek-go=/app/libs/logboek-go
-# TEMP END
+COPY server/go.mod server/go.sum .
 
 RUN go mod download -x
 
