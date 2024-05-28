@@ -14,6 +14,8 @@ type ProcessingOperationHandler interface {
 	OnEnd(op *ProcessingOperation)
 }
 
+var _ ProcessingOperationHandler = &GRPCProcessingOperationHandler{}
+
 type GRPCProcessingOperationHandler struct {
 	client proto_v1.LogboekServiceClient
 }
