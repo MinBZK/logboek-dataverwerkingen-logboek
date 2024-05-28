@@ -24,12 +24,8 @@ func (p ProcessingContext) IsValid() bool {
 	return !p.traceID.Empty() && !p.operationID.Empty()
 }
 
-func ContextWithProcessingOperation(parent context.Context, op *ProcessingOperation) context.Context {
-	return context.WithValue(parent, currentProcessingKey, op)
-}
-
-func ContexFromRemoteProcessingOperation() context.Context {
-	return context.Background()
+func ContextWithProcessingOperation(ctx context.Context, op *ProcessingOperation) context.Context {
+	return context.WithValue(ctx, currentProcessingKey, op)
 }
 
 var emptyProcessingOperation = ProcessingOperation{}
