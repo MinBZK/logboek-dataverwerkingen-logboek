@@ -57,6 +57,10 @@ func (h *GRPCProcessingOperationHandler) OnEnd(op *ProcessingOperation) {
 	}
 
 	req := proto_v1.ExportOperationsRequest{
+		Resource: &proto_v1.Resource{
+			Name:    op.resource.Name,
+			Version: op.resource.Version,
+		},
 		Operations: []*proto_v1.ProcessingOperation{&out},
 	}
 

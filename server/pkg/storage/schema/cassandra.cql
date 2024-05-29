@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS logboek.processing_operations (
     foreign_trace_id text,
     foreign_operation_id text,
     attributes list<frozen<attribute>>,
+    resource_name text,
+    resource_version text,
 
     PRIMARY KEY (trace_id, operation_id)
 );

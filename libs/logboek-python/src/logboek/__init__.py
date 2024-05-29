@@ -3,7 +3,12 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import Enum
 from time import time_ns
-from typing import Dict, Iterator, Optional
+from typing import Dict, Iterator, NamedTuple, Optional
+
+
+class Resource(NamedTuple):
+    name: str
+    version: str
 
 
 class ProcessingContext:
@@ -35,11 +40,13 @@ class ProcessingOperation:
     def __init__(
         self,
         name: str,
+        resource: Resource,
         context: ProcessingContext,
         parent_context: Optional[ProcessingContext] = None,
         handler: ProcessingOperationHandler = ProcessingOperationHandler(),
     ):
         self._name = name
+        self._resource = resource
         self._context = context
         self._parent_context = parent_context
         self._handler = handler
@@ -64,7 +71,7 @@ class ProcessingOperation:
         self.set_attributes({key: value})
 
 
-_NONE_PROCESSING = ProcessingOperation("", None)
+_NONE_PROCESSING = ProcessingOperation("", None, None)
 _CURRENT_PROCESSING = ContextVar("current-processing", default=_NONE_PROCESSING)
 
 
@@ -73,7 +80,8 @@ def get_current_proccessing() -> ProcessingOperation:
 
 
 class ProcessingOperator:
-    def __init__(self, handler: ProcessingOperationHandler) -> None:
+    def __init__(self, resource: Resource, handler: ProcessingOperationHandler) -> None:
+        self._resource = resource
         self._handler = handler
 
     def start_proccessing(self, processing_name: str) -> ProcessingOperation:
@@ -87,7 +95,7 @@ class ProcessingOperator:
 
         context = ProcessingContext(trace_id=trace_id, operation_id=self._generate_operation_id())
 
-        op = ProcessingOperation(processing_name, context, parent_context, self._handler)
+        op = ProcessingOperation(processing_name, self._resource, context, parent_context, self._handler)
         op.start()
 
         return op
@@ -117,12 +125,14 @@ class ProcessingOperator:
 _PROCESSING_OPERATOR: Optional["ProcessingOperator"] = None
 
 
-def init_processing_operator(handler: Optional[ProcessingOperationHandler] = ProcessingOperationHandler()):
+def init_processing_operator(
+    resource: Resource, handler: Optional[ProcessingOperationHandler] = ProcessingOperationHandler()
+):
     global _PROCESSING_OPERATOR
     if _PROCESSING_OPERATOR is not None:
         raise RuntimeError("Processing operator already initialized")
 
-    _PROCESSING_OPERATOR = ProcessingOperator(handler)
+    _PROCESSING_OPERATOR = ProcessingOperator(resource, handler)
 
 
 def get_processing_operator() -> ProcessingOperator:

@@ -30,7 +30,10 @@ class GrpcProcessingOperationHandler(ProcessingOperationHandler):
             status_code=op._status_code.value,
             attributes=attributes,
         )
-        request = logboek_pb2.ExportOperationsRequest(operations=(pb_op,))
+
+        request = logboek_pb2.ExportOperationsRequest(
+            resource=logboek_pb2.Resource(name=op._resource.name, version=op._resource.version), operations=(pb_op,)
+        )
 
         try:
             self._client.Export(request)

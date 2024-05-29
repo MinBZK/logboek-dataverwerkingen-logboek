@@ -12,7 +12,7 @@ import (
 func TestStartProcessingParentContext(t *testing.T) {
 	ctx := context.Background()
 
-	operator := logboek.NewProcessingOperator(nil)
+	operator := logboek.NewProcessingOperator(logboek.Resource{}, nil)
 	ctx, a := operator.StartProcessing(ctx, "a")
 	_, b := operator.StartProcessing(ctx, "b")
 

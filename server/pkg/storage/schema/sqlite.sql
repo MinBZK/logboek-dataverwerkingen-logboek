@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS processing_operations (
     status_code VARCHAR(5) NOT NULL,
     foreign_trace_id CHAR(32),
     foreign_operation_id CHAR(16),
+    resource_name VARCHAR,
+    resource_version VARCHAR,
 
     PRIMARY KEY (trace_id, operation_id)
 ) WITHOUT ROWID;

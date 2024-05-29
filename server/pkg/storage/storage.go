@@ -53,4 +53,10 @@ type ProcessingOperation struct {
 	ForeignTraceID     logboek.TraceID
 	ForeignOperationID logboek.OperationID
 	Attributes         []Attribute
+	Resource           Resource
+}
+
+type Resource struct {
+	Name    string
+	Version string
 }

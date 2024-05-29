@@ -55,11 +55,13 @@ func (s *CassandraStore) Write(ctx context.Context, op ProcessingOperation) erro
 		INSERT INTO processing_operations (
 			trace_id, operation_id, parent_operation_id,
 			name, start_time, end_time, status_code,
-			foreign_trace_id, foreign_operation_id, attributes
+			foreign_trace_id, foreign_operation_id, attributes,
+			resource_name, resource_version
 		) VALUES (
 			?, ?, ?,
 			?, ?, ?, ?,
-			?, ?, ?
+			?, ?, ?,
+			?, ?
 		)`
 
 	var parentOperationID *string
@@ -85,6 +87,8 @@ func (s *CassandraStore) Write(ctx context.Context, op ProcessingOperation) erro
 		foreignTraceID,
 		foreignOperationID,
 		op.Attributes,
+		op.Resource.Name,
+		op.Resource.Version,
 	).WithContext(ctx)
 
 	return query.Exec()

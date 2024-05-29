@@ -68,7 +68,8 @@ type ProcessingOperation struct {
 	statusCode StatusCode
 	attributes []attribute.Attribute
 
-	handler ProcessingOperationHandler
+	resource Resource
+	handler  ProcessingOperationHandler
 }
 
 func (op *ProcessingOperation) Start() {
@@ -97,7 +98,8 @@ func (op *ProcessingOperation) SetAttributes(attrs ...attribute.Attribute) {
 }
 
 type ProcessingOperator struct {
-	handler ProcessingOperationHandler
+	resource Resource
+	handler  ProcessingOperationHandler
 }
 
 func (o *ProcessingOperator) StartProcessing(ctx context.Context, processingName string) (context.Context, *ProcessingOperation) {
@@ -126,6 +128,7 @@ func (o *ProcessingOperator) StartProcessing(ctx context.Context, processingName
 			operationID: operationID,
 		},
 		parentContext: parentContext,
+		resource:      o.resource,
 		handler:       o.handler,
 	}
 
@@ -136,8 +139,14 @@ func (o *ProcessingOperator) StartProcessing(ctx context.Context, processingName
 	return ctx, op
 }
 
-func NewProcessingOperator(handler ProcessingOperationHandler) *ProcessingOperator {
+func NewProcessingOperator(resource Resource, handler ProcessingOperationHandler) *ProcessingOperator {
 	return &ProcessingOperator{
-		handler: handler,
+		resource: resource,
+		handler:  handler,
 	}
+}
+
+type Resource struct {
+	Name    string
+	Version string
 }

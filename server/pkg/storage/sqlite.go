@@ -58,10 +58,12 @@ func (s *SqliteStore) Initialize() error {
 		INSERT INTO processing_operations (
 			trace_id, operation_id, parent_operation_id,
 			name, start_time, end_time, status_code,
-			foreign_trace_id, foreign_operation_id
+			foreign_trace_id, foreign_operation_id,
+			resource_name, resource_version
 		) VALUES (
 			?, ?, ?,
 			?, ?, ?, ?,
+			?, ?,
 			?, ?
 		)`
 	s.insertOperationStmt, err = s.db.Prepare(insertOperation)
@@ -114,6 +116,8 @@ func (s *SqliteStore) Write(ctx context.Context, op ProcessingOperation) error {
 		op.StatusCode.String(),
 		foreignTraceID,
 		foreignOperationID,
+		op.Resource.Name,
+		op.Resource.Version,
 	)
 	if err != nil {
 		return err

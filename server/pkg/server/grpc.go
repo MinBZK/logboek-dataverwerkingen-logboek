@@ -20,9 +20,18 @@ type LogboekService struct {
 }
 
 func (s LogboekService) Export(ctx context.Context, in *proto_v1.ExportOperationsRequest) (resp *proto_v1.ExportOperationsResponse, err error) {
+	if in.Resource == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "missing resource")
+	}
+
+	resource := storage.Resource{
+		Name:    in.Resource.Name,
+		Version: in.Resource.Version,
+	}
+
 	for _, reqOp := range in.Operations {
 		log.Printf("name=%s, root=%t, status_code=%s", reqOp.GetName(), reqOp.GetParentOperationId() == nil, reqOp.GetStatusCode())
-		resp, err = s.handleOp(ctx, reqOp)
+		resp, err = s.handleOp(ctx, resource, reqOp)
 		if err != nil {
 			break
 		}
@@ -31,7 +40,7 @@ func (s LogboekService) Export(ctx context.Context, in *proto_v1.ExportOperation
 	return resp, err
 }
 
-func (s LogboekService) handleOp(ctx context.Context, reqOp *proto_v1.ProcessingOperation) (*proto_v1.ExportOperationsResponse, error) {
+func (s LogboekService) handleOp(ctx context.Context, resource storage.Resource, reqOp *proto_v1.ProcessingOperation) (*proto_v1.ExportOperationsResponse, error) {
 	traceID, err := logboek.TraceIDFromBytes(reqOp.TraceId)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "trace_id: %v", err)
@@ -95,6 +104,7 @@ func (s LogboekService) handleOp(ctx context.Context, reqOp *proto_v1.Processing
 		ForeignTraceID:     foreignTraceID,
 		ForeignOperationID: foreignOperationID,
 		Attributes:         attributes,
+		Resource:           resource,
 	}
 
 	err = s.store.Write(ctx, op)
