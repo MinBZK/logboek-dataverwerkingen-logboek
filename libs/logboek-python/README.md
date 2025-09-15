@@ -11,7 +11,7 @@ pip install "logboek @ https://github.com/MinBZK/logboek-dataverwerkingen-logboe
 ## Gebruik
 
 ```python
-from logboek import init_processing_operator
+from logboek import init_processing_operator, get_processing_operator, Resource
 from logboek.handlers import GrpcProcessingOperationHandler
 
 # Adres van de logboekserver
@@ -21,7 +21,8 @@ logboek_endpoint = "localhost:9000"
 handler = GrpcProcessingOperationHandler(logboek_endpoint)
 
 # Configureer eenmalig de operator
-init_processing_operator(handler)
+resource = Resource(name="mijn-resource", version="1.0.0")
+init_processing_operator(resource=resource, handler=handler)
 
 # Met een operator worden nieuwe verwerkingen gestart
 operator = get_processing_operator()
